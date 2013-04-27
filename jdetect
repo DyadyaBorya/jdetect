@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# detects if first argument is a valid java jar file
+# intentionaly silent, check exit status for result
+
+exec >/dev/null 2>&1
+
+jartest=META-INF/MANIFEST.MF
+
+[ -r "$1" ] &&
+
+if type jar; then
+	jar -tf "$1" "$jartest" | grep -q '^'"$jartest"'$'
+
+elif type unzip; then
+	unzip -l "$1" "$jartest" | grep -q "$jartest"'$'
+
+else
+	exit 1
+fi
