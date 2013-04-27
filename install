@@ -49,4 +49,34 @@ mydir=$(dirname "$0")
 
 if [ "$uninstall" -gt 0 ]; then uninstall; exit; fi
 
-echo "installing to $prefix"
+mkdir -p "$basedir"
+
+cp "$mydir"/jexec "$mydir"/jdetect "$basedir"
+
+awk -v package="$package" -v basedir="$basedir" '{ \
+	sub("%PACKAGE%", package)
+	sub("%BASEDIR%", basedir)
+	}1' "$mydir"/jar.binfmt.in > "$basedir"/jar.binfmt
+
+awk -v prefix="$prefix" \
+    '/^uninstall=/{sub("=.*","=1")}
+     /^prefix=/   {sub("=.*","=\"" prefix "\"")}
+     1' "$mydir/install" > "$basedir/uninstall"
+chmod +x "$basedir/uninstall"
+
+update-alternatives \
+	--install /usr/bin/jexec jexec $basedir/jexec 1100 \
+	--slave \
+	    /usr/share/binfmts/jar \
+	    jexec-binfmt \
+	    $basedir/jar.binfmt
+
+# remove existing entry, if any
+entry=/var/lib/binfmts/jar
+if [ -f "$entry" ]; then
+	current=$(head -n 1 "$entry")
+	update-binfmts --package "$current" --remove jar /usr/bin/jexec || true
+fi
+
+# add entry
+update-binfmts --package "$package" --import jar
