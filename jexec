@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# wrapper for jexec, using the one in current jvm pointed by /usr/bin/java
+
+javadir=$(readlink -f "$(dirname "$(readlink -f /usr/bin/java)")"/..)
+jexec="$javadir"/lib/jexec
+
+if [ -f "$jexec" ]; then
+	"$jexec" "$@"
+fi
