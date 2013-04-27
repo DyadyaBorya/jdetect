@@ -3,6 +3,7 @@
 prefix=/usr/local
 package=jdetect
 uninstall=0
+force=0
 
 fatal() { [ -n "$1" ] && echo "error: $1" >&2; exit 1; }
 usage() {
@@ -13,6 +14,7 @@ Install $package, a proper java '.jar' detector for binfmts
 
 Options:
   -h|--help     - show this page.
+  --force       - run even if not root
   --prefix PATH - set prefix of install path to PATH. default is "$prefix"
   --uninstall   - uninstall $package.
                   Combine with --prefix to uninstall from a custom path
@@ -34,6 +36,7 @@ while [ $# -gt 0 ]; do
 	case "$1" in
 	--prefix) shift; [ -n "$1" ] || fatal "missing prefix"; prefix="$1";;
 	--uninstall) uninstall=1;;
+	--force) force=1;;
 	esac
 	shift
 done
@@ -41,6 +44,8 @@ done
 
 basedir=$prefix/lib/$package
 mydir=$(dirname "$0")
+
+[ "$force" -eq 0 ] && [ $(id -u) -gt 0 ] && fatal "must be root to run, unless --force is set"
 
 if [ "$uninstall" -gt 0 ]; then uninstall; exit; fi
 
