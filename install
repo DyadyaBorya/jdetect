@@ -1,6 +1,7 @@
 #!/bin/sh
 
 prefix=/usr/local
+package=jdetect
 uninstall=0
 
 fatal() { [ -n "$1" ] && echo "error: $1" >&2; exit 1; }
@@ -8,12 +9,12 @@ usage() {
 cat <<USAGE
 Usage: $0 [options]
 
-Install jdetect, a proper java '.jar' detector for binfmts
+Install $package, a proper java '.jar' detector for binfmts
 
 Options:
   -h|--help     - show this page.
   --prefix PATH - set prefix of install path to PATH. default is "$prefix"
-  --uninstall   - uninstall jdetect.
+  --uninstall   - uninstall $package.
                   Combine with --prefix to uninstall from a custom path
 
 Copyright (C) 2013 Rodrigo Silva (MestreLion) <linux@rodrigosilva.com>
@@ -36,6 +37,10 @@ while [ $# -gt 0 ]; do
 	esac
 	shift
 done
+
+
+basedir=$prefix/lib/$package
+mydir=$(dirname "$0")
 
 if [ "$uninstall" -gt 0 ]; then uninstall; exit; fi
 

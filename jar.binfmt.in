@@ -1,4 +1,4 @@
-package jdetect
+package %PACKAGE%
 interpreter /usr/bin/jexec
 magic PK\x03\x04
-detector %PREFIX%/lib/jdetect/jdetect
+detector %BASEDIR%/jdetect
